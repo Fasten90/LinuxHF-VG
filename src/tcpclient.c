@@ -6,6 +6,8 @@
  */
 
 #include "tcpclient.h"
+#include "command.h"
+#include "chat.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -22,9 +24,10 @@ int TCP_ClientInit( char* address)
   struct addrinfo hints;
   struct addrinfo* res;
   int err;
-  int csock;
-  char buf[1024];
-  int len;
+
+  extern int csock;
+  extern char buf[];
+  extern int len;
 
   if ( address == NULL )
   {
@@ -33,12 +36,12 @@ int TCP_ClientInit( char* address)
     return 1;
   }
 
-  /* kitöltjük a hints struktúrát */
+  // kitöltjük a hints struktúrát
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
-  /* végezzük el a névfeloldást */
+  // végezzük el a névfeloldást
   err = getaddrinfo(address, PORT, &hints, &res);
   if(err != 0)
   {
@@ -50,7 +53,7 @@ int TCP_ClientInit( char* address)
     return -1;
   }
 
-  /* létrehozzuk a kliens socketet */
+  // létrehozzuk a kliens socketet
   csock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   if(csock < 0)
   {
@@ -69,19 +72,50 @@ int TCP_ClientInit( char* address)
 	  printf("Sikeres csatlakozás!\n");
   }
 
-  /* az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül */
-  while((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
-  {
+	/*
+	// az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül
+	while((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
+	{
 
-    send(csock, buf, len, 0);
+		send(csock, buf, len, 0);
 
-    COMMAND_Check(buf,len);
-  }
+		COMMAND_Check(buf,len);
+	}
+	*/
 
-  /* lezárjuk a szerver socketet */
+  /*
+	while (1)
+	{
+
+//		// fogadjuk a beérkező csomagokat, és kiírjuk a tartalmát a képernyőre
+//		if((len = recv(csock, buf, sizeof(buf), 0)) > 0)
+//		{
+//				COMMAND_Check(buf,len);
+//				// TODO:
+//				//printf("\e[31m");
+//				write(STDOUT_FILENO, "\e[31m", 5);	// piros szöveg
+//				//echo -e "\e[31mHello World\e[0m"
+//				//echo -e "\e[0mNormal Text"
+//				write(STDOUT_FILENO, buf, len);
+//				//printf("\e[0m");
+//				write(STDOUT_FILENO, "\e[0m", 4);	// visszaállítás
+//		}
+
+
+		// az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül
+		if((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
+		{
+			send(csock, buf, len, 0);
+		}
+	} // end of while
+	*/
+
+  	  CHAT_Loop();
+
+  // lezárjuk a szerver socketet
   close(csock);
 
-  /* szabadítsuk fel a láncolt listát */
+  // szabadítsuk fel a láncolt listát
   freeaddrinfo(res);
 
   return 0;

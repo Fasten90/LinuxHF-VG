@@ -7,6 +7,7 @@
 
 #include "tcpserver.h"
 #include "command.h"
+#include "chat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,11 @@
 #define PORT "1122"
 
 
+extern int csock;
+extern int ssock;
+
+
+
 int TCP_ServerInit ( void )
 {
   struct addrinfo hints;
@@ -29,9 +35,7 @@ int TCP_ServerInit ( void )
   socklen_t addrlen;
   char ips[NI_MAXHOST];
   char servs[NI_MAXSERV];
-  int ssock, csock;
-  char buf[256];
-  int len;
+
   int reuse;
 
   memset(&hints, 0, sizeof(hints));
@@ -50,7 +54,7 @@ int TCP_ServerInit ( void )
     return -1;
   }
 
-  /* Létrehozzuk a server socketet getaddrinfo() válasza alapján */
+  // Létrehozzuk a server socketet getaddrinfo() válasza alapján
   ssock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   if(ssock < 0)
   {
@@ -58,11 +62,11 @@ int TCP_ServerInit ( void )
     return 1;
   }
 
-  /* Engedélyezzük a REUSE-t (SO_REUSEADDR). Socket level (SOL_SOCKET),  */
+  // Engedélyezzük a REUSE-t (SO_REUSEADDR). Socket level (SOL_SOCKET)
   reuse = 1;
   setsockopt(ssock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
 
-  /* Címhez kötjük a server socketet getaddrinfo() válasza alapján */
+  // Címhez kötjük a server socketet getaddrinfo() válasza alapján
   if(bind(ssock, res->ai_addr, res->ai_addrlen) < 0)
   {
     perror("bind");
@@ -80,45 +84,23 @@ int TCP_ServerInit ( void )
 	  printf("Várakozás a kliens csatlakozására.\n");
   }
 
-  /* Felszabadítjuk a getadrrinfo() által generált láncolt listát. A továbbiakban nem lesz rá szükségünk */
+  // Felszabadítjuk a getadrrinfo() által generált láncolt listát.
+  // A továbbiakban nem lesz rá szükségünk
   freeaddrinfo(res);
 
-  /* Cím hosszának beállítása sizeof()-fal */
+  // Cím hosszának beállítása sizeof()val
   addrlen = sizeof(addr);
-  /* Fogadjuk a kapcsolodasokat. */
+  // Fogadjuk a kapcsolodasokat.
   while((csock = accept(ssock, (struct sockaddr*)&addr, &addrlen)) >= 0)
   {
-    /* próbáljuk meg kideríteni a kapcsolódó nevét */
+    // próbáljuk meg kideríteni a kapcsolódó nevét
     if(getnameinfo((struct sockaddr*)&addr, addrlen,
       ips, sizeof(ips), servs, sizeof(servs), 0) == 0)
     {
       printf("Kapcsolódás: %s:%s\n", ips, servs);
     }
 
-
-    while (1)
-    {
-    	// fogadjuk a beérkező csomagokat, és kiírjuk a tartalmát a képernyőre
-    	if((len = recv(csock, buf, sizeof(buf), 0)) > 0)
-    	{
-			COMMAND_Check(buf,len);
-			// TODO:
-			//printf("\e[31m");
-			write(STDOUT_FILENO, "\e[31m", 5);
-			//echo -e "\e[31mHello World\e[0m"
-			//echo -e "\e[0mNormal Text"
-			write(STDOUT_FILENO, buf, len);
-			//printf("\e[0m");
-			write(STDOUT_FILENO, "\e[0m", 4);
-    	}
-
-		// az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül
-		if((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
-		{
-			send(csock, buf, len, 0);
-		}
-    } // end of while
-
+    CHAT_Loop();
 
     printf("Kapcsolat zárása.\n");
     // lezárjuk a kliens socketet

@@ -9,5 +9,8 @@
 #define SRC_GETIPADDRESS_H_
 
 
+int TCP_GetIpAddress ( char *string );
+
+
 
 #endif /* SRC_GETIPADDRESS_H_ */

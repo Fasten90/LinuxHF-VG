@@ -18,6 +18,8 @@
 #include "tcpclient.h"
 #include "getipaddress.h"
 #include "command.h"
+#include "chat.h"
+#include "global.h"
 
 
 // DEFINES
