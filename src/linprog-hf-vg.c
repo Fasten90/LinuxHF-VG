@@ -17,6 +17,7 @@
 #include "tcpserver.h"
 #include "tcpclient.h"
 #include "getipaddress.h"
+#include "command.h"
 
 
 // DEFINES

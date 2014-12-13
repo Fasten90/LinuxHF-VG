@@ -72,7 +72,10 @@ int TCP_ClientInit( char* address)
   /* az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül */
   while((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
   {
+
     send(csock, buf, len, 0);
+
+    COMMAND_Check(buf,len);
   }
 
   /* lezárjuk a szerver socketet */

@@ -6,6 +6,7 @@
  */
 
 #include "tcpserver.h"
+#include "command.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,25 +95,37 @@ int TCP_ServerInit ( void )
       printf("Kapcsolódás: %s:%s\n", ips, servs);
     }
 
-    /* fogadjuk a beérkező csomagokat, és kiírjuk a tartalmát a képernyőre */
-    while((len = recv(csock, buf, sizeof(buf), 0)) > 0)
+
+    while (1)
     {
-    	// TODO:
-    	//printf("\e[31m");
-    	write(STDOUT_FILENO, "\e[31m", 5);
-		//echo -e "\e[31mHello World\e[0m"
-		//echo -e "\e[0mNormal Text"
-    	write(STDOUT_FILENO, buf, len);
-    	//printf("\e[0m");
-    	write(STDOUT_FILENO, "\e[0m", 4);
-    }
+    	// fogadjuk a beérkező csomagokat, és kiírjuk a tartalmát a képernyőre
+    	if((len = recv(csock, buf, sizeof(buf), 0)) > 0)
+    	{
+			COMMAND_Check(buf,len);
+			// TODO:
+			//printf("\e[31m");
+			write(STDOUT_FILENO, "\e[31m", 5);
+			//echo -e "\e[31mHello World\e[0m"
+			//echo -e "\e[0mNormal Text"
+			write(STDOUT_FILENO, buf, len);
+			//printf("\e[0m");
+			write(STDOUT_FILENO, "\e[0m", 4);
+    	}
+
+		// az STDIN_FILENO-n érkező adatokat elküldjük a socketen keresztül
+		if((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0)
+		{
+			send(csock, buf, len, 0);
+		}
+    } // end of while
+
 
     printf("Kapcsolat zárása.\n");
-    /* lezárjuk a kliens socketet */
+    // lezárjuk a kliens socketet
     close(csock);
   }
 
-  /* lezárjuk a szerver socketet */
+  // lezárjuk a szerver socketet
   close(ssock);
 
   return 0;
