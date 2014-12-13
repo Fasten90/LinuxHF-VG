@@ -16,6 +16,7 @@
 
 #include "tcpserver.h"
 #include "tcpclient.h"
+#include "getipaddress.h"
 
 
 // DEFINES
@@ -89,14 +90,15 @@ int menu ( void )
 					break;
 				case 'c':
 					printf("Kérlek írd be a szerver IP címét!\n");
-					fflush(stdin);
-					fflush(stdout);
+					//fflush(stdin);
+					//fflush(stdout);
 					//gets(string); // !! IMPORTANT!! DANGEROUS!! UNSAFE!!
 					//fgets (string , 20, stdin);	// DANGEROUS!! nem flusholódik ki az előző adat
 					scanf ("%20s",string);	// "192.168.211.128"
 
-					fflush(stdin);
-					fflush(stdout);
+					TCP_GetIpAddress(string);
+					//fflush(stdin);
+					//fflush(stdout);
 					printf("Szerver keresése...\n");
 					TCP_ClientInit (string);
 					break;
