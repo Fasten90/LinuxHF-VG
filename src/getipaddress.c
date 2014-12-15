@@ -27,12 +27,12 @@ int TCP_GetIpAddress ( char *string )
     return -1;
   }
 
-  /* kitöltjük a hints struktúrát */
+  // kitöltjük a hints struktúrát
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
-  /* végezzük el a névfeloldást */
+  // végezzük el a névfeloldást
   err = getaddrinfo( string, NULL, &hints, &res);
   if(err != 0)
   {
@@ -40,10 +40,10 @@ int TCP_GetIpAddress ( char *string )
     return -1;
   }
 
-  /* járjuk be egy ciklusban a kapott láncolt listát (ai_next)*/
+  // járjuk be egy ciklusban a kapott láncolt listát (ai_next)
   for(p = res; p != NULL; p = p->ai_next)
   {
-    /* döntsük el, hogy IPv4 vagy IPv6 cím van a struktúrában, annak megfelelően írjuk ki a tartalmát */
+    // döntsük el, hogy IPv4 vagy IPv6 cím van a struktúrában, annak megfelelően írjuk ki a tartalmát
     if(p->ai_family == AF_INET)
     {
       if(inet_ntop(AF_INET, &((struct sockaddr_in*)(p->ai_addr))->sin_addr, ips, sizeof(ips)) != NULL)
@@ -62,7 +62,7 @@ int TCP_GetIpAddress ( char *string )
     }
   }
 
-  /* szabadítsuk fel a láncolt listát */
+  // szabadítsuk fel a láncolt listát
   freeaddrinfo(res);
 
   return 0;

@@ -9,5 +9,8 @@
 #define SRC_GLOBAL_H_
 
 
+int GLOBAL_ChatExit_flag;
+
+
 
 #endif /* SRC_GLOBAL_H_ */

@@ -19,8 +19,8 @@ extern int STD_len;
 
 // PROTOTYPES
 void CHAT_Loop ( void );
-void CHAT_TCPReceive ( void );
-void CHAT_STDINReceive ( void );
+void* CHAT_TCPReceive ( void );
+void* CHAT_STDINReceive ( void );
 
 
 

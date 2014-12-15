@@ -62,7 +62,7 @@ int main ( void )
 int menu ( void )
 {
 	char c;
-	char string[20];
+	char string[20] = "localhost";
 	
 	printf(DEFINE_TEXT_MENU);
 
@@ -89,19 +89,21 @@ int menu ( void )
 					// TODO
 					break;
 				case 'b':
+					//string =  "localhost" ;
+					TCP_GetIpAddress(string);
 					TCP_ServerInit ();	// TODO: delete DEFINE_SERVERADDRESS
 					break;
 				case 'c':
 					printf("Kérlek írd be a szerver IP címét!\n");
-					//fflush(stdin);
-					//fflush(stdout);
+					fflush(stdin);
+					fflush(stdout);
 					//gets(string); // !! IMPORTANT!! DANGEROUS!! UNSAFE!!
 					//fgets (string , 20, stdin);	// DANGEROUS!! nem flusholódik ki az előző adat
 					scanf ("%20s",string);	// "192.168.211.128"
+					fflush(stdin);
+					fflush(stdout);
 
 					TCP_GetIpAddress(string);
-					//fflush(stdin);
-					//fflush(stdout);
 					printf("Szerver keresése...\n");
 					TCP_ClientInit (string);
 					break;

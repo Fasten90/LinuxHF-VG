@@ -91,6 +91,22 @@ int TCP_ServerInit ( void )
   // Cím hosszának beállítása sizeof()val
   addrlen = sizeof(addr);
   // Fogadjuk a kapcsolodasokat.
+
+  csock = accept(ssock, (struct sockaddr*)&addr, &addrlen);
+
+  // próbáljuk meg kideríteni a kapcsolódó nevét
+  if(getnameinfo((struct sockaddr*)&addr, addrlen,
+	ips, sizeof(ips), servs, sizeof(servs), 0) == 0)
+  {
+	printf("Kapcsolódás: %s:%s\n", ips, servs);
+  }
+
+  CHAT_Loop();
+
+  printf("Kapcsolat zárása.\n");
+  // lezárjuk a kliens socketet
+  close(csock);
+  /*
   while((csock = accept(ssock, (struct sockaddr*)&addr, &addrlen)) >= 0)
   {
     // próbáljuk meg kideríteni a kapcsolódó nevét
@@ -106,6 +122,7 @@ int TCP_ServerInit ( void )
     // lezárjuk a kliens socketet
     close(csock);
   }
+  */
 
   // lezárjuk a szerver socketet
   close(ssock);
