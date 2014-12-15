@@ -13,6 +13,8 @@
 #include "chat.h"
 #include "global.h"
 #include "command.h"
+#include "log.h"
+
 
 #include <pthread.h>
 
@@ -50,6 +52,8 @@ void CHAT_Loop ( void )
 	  pthread_t Thread_TCP;
 	  pthread_t Thread_STD;
 
+	  LOG_WriteWithDateTime("chat start");
+
 	  // Szálak létrehozása
 	  // 3. paraméter (warning volt rá):
 	  // void *(*__start_routine) (void *),
@@ -84,6 +88,8 @@ void CHAT_Loop ( void )
 			  //pthread_join(Thread_STD, NULL);
 			  // return from CHAT_Loop()
 			  // after this, close socket and others
+
+			  LOG_WriteWithDateTime("chat end");
 			  return;
 		  }
 		  sleep(1);
